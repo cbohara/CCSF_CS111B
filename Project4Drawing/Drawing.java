@@ -1,7 +1,9 @@
+import java.util.ArrayList;
 import javafx.application.*;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.*;
@@ -15,11 +17,13 @@ import javafx.stage.*;
 public class Drawing extends Application {
 	private Pane pane;
 	private BorderPane borderPane;
+	Scene scene;
 	private Text statusText;
 	private Circle circle;
 	private Color circleColor;
 	private boolean drawingCircle;
 	private RadioButton red, blue, yellow;
+	private Button button;
 	
 	public void start(Stage primaryStage) {
 		drawingCircle = false;
@@ -40,10 +44,12 @@ public class Drawing extends Application {
 		yellow.setToggleGroup(group);
 		yellow.setOnAction(this::handleColorOptions);
 		
-		HBox radioButtonBox = new HBox(red, blue, yellow);
-		radioButtonBox.setAlignment(Pos.CENTER);
-		radioButtonBox.setSpacing(10);
-		pane.getChildren().add(radioButtonBox);
+		button = new Button("Clear");
+		button.setOnAction(this::handleButton);
+		HBox optionsBox = new HBox(red, blue, yellow, button);
+		optionsBox.setAlignment(Pos.CENTER);
+		optionsBox.setSpacing(10);
+		pane.getChildren().add(optionsBox);
 		
 		pane.setOnMouseClicked(this::handleMouseClicks);
 		pane.setOnMouseMoved(this::handleMouseMotion);
@@ -56,11 +62,12 @@ public class Drawing extends Application {
 		textBox.setAlignment(Pos.CENTER);
 		borderPane.setBottom(textBox);
 		
-		Scene scene = new Scene(borderPane, 500, 500, Color.ALICEBLUE);
+		scene = new Scene(borderPane, 500, 500, Color.ALICEBLUE);
 		primaryStage.setTitle("Drawing");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
+	
 	
 	private void handleMouseClicks(MouseEvent event) {
 		if(!drawingCircle) {
@@ -85,7 +92,6 @@ public class Drawing extends Application {
 	private void handleColorOptions(ActionEvent event) {
 		if(red.isSelected()) {
 			setCircleColor(Color.RED);
-			System.out.println(circleColor);
 		} else if(blue.isSelected()) {
 			setCircleColor(Color.BLUE);
 		} else if(yellow.isSelected()) {
@@ -93,8 +99,12 @@ public class Drawing extends Application {
 		}
 	}
 	
-	public void setCircleColor(Color circleColor) {
+	private void setCircleColor(Color circleColor) {
 		this.circleColor = circleColor;
+	}
+	
+	private void handleButton(ActionEvent event) {
+		pane.getChildren().removeIf(n -> n instanceof Circle);
 	}
 	
 	public static void main(String[] args) {
